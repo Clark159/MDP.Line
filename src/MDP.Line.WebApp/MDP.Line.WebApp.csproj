@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MDP.AspNetCore" Version="6.0.13" />
+    <PackageReference Include="MDP.AspNetCore.Authentication.Hosting" Version="6.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MDP.Line.Hosting\MDP.Line.Hosting.csproj" />
+    <ProjectReference Include="..\MDP.Line.Services\MDP.Line.Services.csproj" />
+  </ItemGroup>
+
+</Project>

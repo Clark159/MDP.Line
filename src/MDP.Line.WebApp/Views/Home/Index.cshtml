@@ -1,0 +1,158 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>MDP.Line</title>
+    <link href="~/index.css" rel="stylesheet" />
+    <script src="~/mdp.web.js"></script>
+    <script language="javascript">
+        window.onload = function () {
+
+            // FindAllUser
+            document.getElementById("findAllUser.button").addEventListener("click", event => {
+
+                // Variables
+
+                // ActionModel
+                var actionModel = {};
+
+                // Post
+                postRequst("/Home/FindAllUser", actionModel)
+
+                    // Success
+                    .then(function (response) {
+                        document.getElementById("findAllUser.result").innerText = JSON.stringify(response, null, 2);
+                    })
+
+                    // Error
+                    .catch(function (error) {
+                        document.getElementById("findAllUser.result").innerText = JSON.stringify(error, null, 2);
+                    });
+            });
+
+            // FindAllMessage
+            document.getElementById("findAllMessage.button").addEventListener("click", event => {
+
+                // Variables
+                var userId = document.getElementById("findAllMessage.userId").value;
+
+                // ActionModel
+                var actionModel = {};
+                actionModel.userId = userId;
+
+                // Post
+                postRequst("/Home/FindAllMessage", actionModel)
+
+                    // Success
+                    .then(function (response) {
+                        document.getElementById("findAllMessage.result").innerText = JSON.stringify(response, null, 2);
+                    })
+
+                    // Error
+                    .catch(function (error) {
+                        document.getElementById("findAllMessage.result").innerText = JSON.stringify(error, null, 2);
+                    });
+            });
+
+            // SendTextMessage
+            document.getElementById("sendTextMessage.button").addEventListener("click", event => {
+
+                // Variables
+                var userId = document.getElementById("sendTextMessage.userId").value;
+                var senderId = document.getElementById("sendTextMessage.senderId").value;
+                var text = document.getElementById("sendTextMessage.text").value;
+
+                // ActionModel
+                var actionModel = {};
+                actionModel.userId = userId;
+                actionModel.senderId = senderId;
+                actionModel.text = text;
+
+                // Post
+                postRequst("/Home/SendTextMessage", actionModel)
+
+                    // Success
+                    .then(function (response) {
+                        document.getElementById("sendTextMessage.result").innerText = JSON.stringify(response, null, 2);
+                    })
+
+                    // Error
+                    .catch(function (error) {
+                        document.getElementById("sendTextMessage.result").innerText = JSON.stringify(error, null, 2);
+                    });
+            });
+
+            // SendStickerMessage
+            document.getElementById("sendStickerMessage.button").addEventListener("click", event => {
+
+                // Variables
+                var userId = document.getElementById("sendStickerMessage.userId").value;
+                var senderId = document.getElementById("sendStickerMessage.senderId").value;
+                var packageId = document.getElementById("sendStickerMessage.packageId").value;
+                var stickerId = document.getElementById("sendStickerMessage.stickerId").value;
+
+                // ActionModel
+                var actionModel = {};
+                actionModel.userId = userId;
+                actionModel.senderId = senderId;
+                actionModel.packageId = packageId;
+                actionModel.stickerId = stickerId;
+
+                // Post
+                postRequst("/Home/SendStickerMessage", actionModel)
+
+                    // Success
+                    .then(function (response) {
+                        document.getElementById("sendStickerMessage.result").innerText = JSON.stringify(response, null, 2);
+                    })
+
+                    // Error
+                    .catch(function (error) {
+                        document.getElementById("sendStickerMessage.result").innerText = JSON.stringify(error, null, 2);
+                    });
+            });
+        };
+    </script>
+</head>
+<body>
+
+    <!--Title-->
+    <h2>MDP.Line</h2>
+    <hr />
+
+    <!--FindAllUser-->
+    <h3>FindAllUser</h3>
+    <input type="button" id="findAllUser.button" value="Execute" />&nbsp;(要認證帳號or企業帳號才能抓取用戶清單，請先發送訊息到官方帳號，才能抓到用戶資料)<br />
+    <div id="findAllUser.result"></div><br />
+    <hr />
+
+    <!--FindAllMessage-->
+    <h3>FindAllMessage</h3>
+    UserId:<input type="text" id="findAllMessage.userId" /><br />
+    <input type="button" id="findAllMessage.button" value="Execute" /><br />
+    <div id="findAllMessage.result"></div><br />
+    <hr />
+
+    <!--SendTextMessage-->
+    <h3>SendTextMessage</h3>
+    UserId:<input type="text" id="sendTextMessage.userId" /><br />
+    SenderId:<input type="text" id="sendTextMessage.senderId" value="Staff0001" /><br />
+    Text:<input type="text" id="sendTextMessage.text" value="測試訊息" /><br />
+    <input type="button" id="sendTextMessage.button" value="Execute" /><br />
+    <div id="sendTextMessage.result"></div><br />
+    <hr />
+
+    <!--SendStickerMessage-->
+    <h3>SendStickerMessage</h3>
+    UserId:<input type="text" id="sendStickerMessage.userId" /><br />
+    SenderId:<input type="text" id="sendStickerMessage.senderId" value="Staff0001" /><br />
+    PackageId:<input type="text" id="sendStickerMessage.packageId" value="1" /><br />
+    StickerId:<input type="text" id="sendStickerMessage.stickerId" value="109" /><br />
+    <input type="button" id="sendStickerMessage.button" value="Execute" /><br />
+    <div id="sendStickerMessage.result"></div><br />
+    <hr />
+
+</body>
+</html>

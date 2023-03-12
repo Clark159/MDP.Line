@@ -1,0 +1,36 @@
+{
+  "MDP.Line": {
+
+    // LineContext
+    "LineContext": {
+      "UserRepository": "MockUserRepository",
+      "MessageRepository": "MockMessageRepository",
+      "ReplyTokenRepository": "MockReplyTokenRepository",
+      "LineProvider": "ApiLineProvider",
+      "PublishProvider": "MockPublishProvider"
+    },
+
+    // UserRepository
+    "SqlUserRepository": {},
+    "MockUserRepository": {},
+
+    // MessageRepository
+    "SqlMessageRepository": {},
+    "MockMessageRepository": {},
+
+    // ReplyTokenRepository
+    "SqlReplyTokenRepository": {},
+    "MockReplyTokenRepository": {},
+
+    // LineProvider
+    "ApiLineProvider": {
+      "channelAccessToken": "3ifdMSUeLzs8q5e0yQLrpUy8uQgG0kEXiOju2fr79lfc2t7Q9Ui6CCTvaJyuadf2ntYeY1GdZqHWr6s6bDE1kek5jbbEGUVEHAuEI3f/sPn9OyEjUJuQNNPmdaJhhsTyaU77iGnXfO8HPm4oN8tbrAdB04t89/1O/w1cDnyilFU=",
+      "channelSecret": "37bebf7ccef77b5e630ffcba9d0ccb50"
+    },
+    "MockLineProvider": {},
+
+    // PublishProvider
+    "SqlPublishProvider": {},
+    "MockPublishProvider": {}
+  }
+}

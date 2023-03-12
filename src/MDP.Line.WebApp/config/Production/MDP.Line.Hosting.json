@@ -1,0 +1,33 @@
+{
+  "MDP.Line": {
+
+    // LineContext
+    "LineContext": {
+      "UserRepository": "MockUserRepository",
+      "MessageRepository": "MockMessageRepository",
+      "ReplyTokenRepository": "MockReplyTokenRepository",
+      "LineProvider": "MockLineProvider",
+      "PublishProvider": "MockPublishProvider"
+    },
+
+    // UserRepository
+    "SqlUserRepository": {},
+    "MockUserRepository": {},
+
+    // MessageRepository
+    "SqlMessageRepository": {},
+    "MockMessageRepository": {},
+
+    // ReplyTokenRepository
+    "SqlReplyTokenRepository": {},
+    "MockReplyTokenRepository": {},
+
+    // LineProvider
+    "SqlLineProvider": {},
+    "MockLineProvider": {},
+
+    // PublishProvider
+    "SqlPublishProvider": {},
+    "MockPublishProvider": {}
+  }
+}
