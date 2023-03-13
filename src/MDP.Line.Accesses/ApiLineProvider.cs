@@ -6,6 +6,12 @@ using System.Reflection.Metadata;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Dynamic;
+using System.Net;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace MDP.Line.Accesses
 {
@@ -37,108 +43,6 @@ namespace MDP.Line.Accesses
 
 
         // Methods
-        public override User? FindUserByUserId(string userId)
-        {
-            #region Contracts
-
-            if (string.IsNullOrEmpty(userId) == true) throw new ArgumentException($"{nameof(userId)}=null");
-
-            #endregion
-
-            // RemoteUser:錯誤處理還沒做
-            var remoteUser = _lineSdk.GetUserInfo(userId);
-            if (remoteUser == null) return null;
-
-            // Return
-            return new User()
-            {
-                UserId = userId,
-                Name = remoteUser.displayName,
-                IsFollowed = true
-            };
-        }
-
-
-        public override void PushMessage(Message message)
-        {
-            #region Contracts
-
-            if (message == null) throw new ArgumentException($"{nameof(message)}=null");
-
-            #endregion
-
-            // TextMessage
-            var textMessage = TextMessage.ToTextMessage(message);
-            if (textMessage != null)
-            {
-                isRock.LineBot.Utility.PushMessage
-                (
-                    message.UserId,
-                    textMessage.Text,
-                    _channelAccessToken
-                );
-                return;
-            }
-
-            // StickerMessage
-            var stickerMessage = StickerMessage.ToStickerMessage(message);
-            if (stickerMessage != null)
-            {
-                isRock.LineBot.Utility.PushStickerMessage
-                (
-                    message.UserId,
-                    stickerMessage.PackageId,
-                    stickerMessage.StickerId,
-                    _channelAccessToken
-                );
-                return;
-            }
-
-            // Unknown
-            throw new InvalidOperationException($"message.MessageType={message.MessageType}");
-        }
-
-        public override void ReplyMessage(Message message, ReplyToken replyToken)
-        {
-            #region Contracts
-
-            if (message == null) throw new ArgumentException($"{nameof(message)}=null");
-            if (replyToken == null) throw new ArgumentException($"{nameof(replyToken)}=null");
-
-            #endregion
-
-            // TextMessage
-            var textMessage = TextMessage.ToTextMessage(message);
-            if (textMessage != null)
-            {
-                isRock.LineBot.Utility.ReplyMessage
-                (
-                    replyToken.TokenValue,
-                    textMessage.Text,
-                    _channelAccessToken
-                );
-                return;
-            }
-
-            // StickerMessage
-            var stickerMessage = StickerMessage.ToStickerMessage(message);
-            if (stickerMessage != null)
-            {
-                isRock.LineBot.Utility.ReplyStickerMessage
-                (
-                    replyToken.TokenValue,
-                    stickerMessage.PackageId,
-                    stickerMessage.StickerId,
-                    _channelAccessToken
-                );
-                return;
-            }
-
-            // Unknown
-            throw new InvalidOperationException($"message.MessageType={message.MessageType}");
-        }
-
-
         public override void HandleHook(string content, string signature)
         {
             #region Contracts
@@ -322,6 +226,184 @@ namespace MDP.Line.Accesses
 
             // Return
             return true;
+        }
+
+
+        public override void SendMessage(TextMessage message, ReplyToken? replyToken = null)
+        {
+            #region Contracts
+
+            if (message == null) throw new ArgumentException($"{nameof(message)}=null");
+
+            #endregion
+
+            // Variables
+            var text = message.Text.Replace("'", "\"");
+
+            // MessageObject
+            dynamic messageObject = new ExpandoObject();
+            {
+                // Message
+                messageObject.type = "text";
+                messageObject.text = text;
+
+                // Sender
+                messageObject.sender = new ExpandoObject();
+                messageObject.sender.name = "Clark";
+                messageObject.sender.iconUrl = @"https://sprofile.line-scdn.net/0hwTIGPma7KHtkPj653TZWBBRuKxFHT3FpQQpgSQQ-fh9fCD0sSlg1HwNrdEpRWz0rTwtgG1ZpdBhoLV8demjUT2MOdkxdCWguS1xjnQ";
+            }
+
+            // SendMessage            
+            this.SendMessage(new List<dynamic>() { messageObject }, message.UserId, replyToken?.TokenValue);
+        }
+
+        public override void SendMessage(StickerMessage message, ReplyToken? replyToken = null)
+        {
+            #region Contracts
+
+            if (message == null) throw new ArgumentException($"{nameof(message)}=null");
+
+            #endregion
+
+            // Variables
+            var packageId = message.PackageId;
+            var stickerId = message.StickerId;
+
+            // MessageObject
+            dynamic messageObject = new ExpandoObject();
+            {
+                // Message
+                messageObject.type = "sticker";
+                messageObject.packageId = packageId;
+                messageObject.stickerId = stickerId;
+
+                // Sender
+                messageObject.sender = new ExpandoObject();
+                messageObject.sender.name = "Clark";
+                messageObject.sender.iconUrl = @"https://sprofile.line-scdn.net/0hwTIGPma7KHtkPj653TZWBBRuKxFHT3FpQQpgSQQ-fh9fCD0sSlg1HwNrdEpRWz0rTwtgG1ZpdBhoLV8demjUT2MOdkxdCWguS1xjnQ";
+            }
+
+            // SendMessage            
+            this.SendMessage(new List<dynamic>() { messageObject }, message.UserId, replyToken?.TokenValue);
+        }
+
+        private string SendMessage(dynamic messageList, string userId, string? replyToken = null)
+        {
+            #region Contracts
+
+            if (messageList == null) throw new ArgumentException($"{nameof(messageList)}=null");
+            if (string.IsNullOrEmpty(userId) == true) throw new ArgumentException($"{nameof(userId)}=null");
+
+            #endregion
+
+            // CommandUrl
+            var commandUrl = string.Empty;
+            if (replyToken == null)
+            {
+                commandUrl = @"https://api.line.me/v2/bot/message/push";
+            }
+            else
+            {
+                commandUrl = @"https://api.line.me/v2/bot/message/reply";
+            }
+
+            // CommandString
+            dynamic command = new ExpandoObject();
+            {
+                // Destination 
+                if (string.IsNullOrEmpty(replyToken) == true)
+                {
+                    command.to = userId;
+                }
+                else
+                {
+                    command.replyToken = replyToken;
+                }
+
+                // Message
+                command.messages = messageList;
+            }
+            var commandString = JsonSerializer.Serialize(command);
+            if (string.IsNullOrEmpty(commandString) == true) throw new InvalidOperationException($"{nameof(commandString)}=null");
+
+            // SendCommand
+            return this.SendCommand(commandUrl, commandString);
+        }
+
+
+        public override User? FindUserByUserId(string userId)
+        {
+            #region Contracts
+
+            if (string.IsNullOrEmpty(userId) == true) throw new ArgumentException($"{nameof(userId)}=null");
+
+            #endregion
+
+            // RemoteUser:錯誤處理還沒做
+            var remoteUser = _lineSdk.GetUserInfo(userId);
+            if (remoteUser == null) return null;
+
+            // Return
+            return new User()
+            {
+                UserId = userId,
+                Name = remoteUser.displayName,
+                Mail = string.Empty,
+                Phone = string.Empty,
+                PictureUrl = remoteUser.pictureUrl,
+                IsFollowed = true,
+                UpdatedTime = DateTime.Now,
+                CreatedTime = DateTime.Now,
+            };
+        }
+
+
+        private string SendCommand(string commandUrl, string commandString)
+        {
+            #region Contracts
+
+            if (string.IsNullOrEmpty(commandUrl) == true) throw new ArgumentException($"{nameof(commandUrl)}=null");
+            if (string.IsNullOrEmpty(commandString) == true) throw new ArgumentException($"{nameof(commandString)}=null");
+
+            #endregion
+
+            // SendMessage            
+            try
+            {
+                // WebClient
+                using (var webClient = new WebClient())
+                {
+                    // Headers
+                    webClient.Headers.Clear();
+                    webClient.Headers.Add("Content-Type", "application/json");
+                    webClient.Headers.Add("Authorization", "Bearer " + _channelAccessToken);
+
+                    // Send
+                    var commandContentBytes = Encoding.UTF8.GetBytes(commandString);
+                    var commandResultBytes = webClient.UploadData(commandUrl, commandContentBytes);
+                    if (commandResultBytes == null) throw new InvalidOperationException($"{nameof(commandResultBytes)}=null");
+
+                    // CommandResult
+                    var commandResult = Encoding.UTF8.GetString(commandResultBytes);
+                    if (string.IsNullOrEmpty(commandResult) == true) throw new InvalidOperationException($"{nameof(commandResult)}=null");
+
+                    // Return
+                    return commandResult;
+                }
+            }
+            catch (WebException ex)
+            {
+                // CommandResult
+                var commandResult = string.Empty;
+                using (var streamReader = new StreamReader(ex.Response!.GetResponseStream()))
+                {
+                    commandResult = streamReader.ReadToEnd();
+                }
+                if (string.IsNullOrEmpty(commandResult) == true) throw new InvalidOperationException($"{nameof(commandResult)}=null");
+
+                // Throw
+                throw new Exception($"LineAPI Error: CommandUrl={commandUrl}, commandString={commandString}, commandResult={commandResult}", ex);
+            }
         }
     }
 }

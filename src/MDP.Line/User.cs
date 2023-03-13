@@ -28,6 +28,7 @@ namespace MDP.Line
             this.Name = user.Name;
             this.Mail = user.Mail;
             this.Phone = user.Phone;
+            this.PictureUrl = user.PictureUrl;
             this.IsFollowed = user.IsFollowed;
             this.UpdatedTime = user.UpdatedTime;
             this.CreatedTime = user.CreatedTime;
@@ -42,6 +43,8 @@ namespace MDP.Line
         public string Mail { get; set; } = string.Empty;
 
         public string Phone { get; set; } = string.Empty;
+
+        public string PictureUrl { get; set; } = string.Empty;
 
         public bool IsFollowed { get; set; } = true;
 
@@ -85,6 +88,7 @@ namespace MDP.Line
                 resultUser.Name = string.IsNullOrEmpty(resultUser.Name) == false ? resultUser.Name : minorUser.Name;
                 resultUser.Mail = string.IsNullOrEmpty(resultUser.Mail) == false ? resultUser.Mail : minorUser.Mail;
                 resultUser.Phone = string.IsNullOrEmpty(resultUser.Phone) == false ? resultUser.Phone : minorUser.Phone;
+                resultUser.PictureUrl = string.IsNullOrEmpty(resultUser.PictureUrl) == false ? resultUser.PictureUrl : minorUser.PictureUrl;
                 resultUser.IsFollowed = resultUser.IsFollowed;
                 resultUser.UpdatedTime = resultUser.UpdatedTime >= minorUser.UpdatedTime ? resultUser.UpdatedTime : minorUser.UpdatedTime;
                 resultUser.CreatedTime = resultUser.CreatedTime <= minorUser.CreatedTime ? resultUser.CreatedTime : minorUser.CreatedTime;

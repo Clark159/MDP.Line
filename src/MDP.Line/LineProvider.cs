@@ -12,9 +12,9 @@ namespace MDP.Line
         // Methods
         public abstract void HandleHook(string content, string signature);
 
-        public abstract void PushMessage(Message message);
+        public abstract void SendMessage(TextMessage message, ReplyToken? replyToken = null);
 
-        public abstract void ReplyMessage(Message message, ReplyToken replyToken);
+        public abstract void SendMessage(StickerMessage message, ReplyToken? replyToken = null);
 
         public abstract User? FindUserByUserId(string userId);
 

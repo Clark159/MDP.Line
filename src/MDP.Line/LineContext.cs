@@ -75,11 +75,37 @@ namespace MDP.Line
             _lineProvider.HandleHook(content, signature);
         }
 
-        public void SendMessage(Message message)
+
+        public void SendMessage(TextMessage message)
         {
             #region Contracts
 
             if (message == null) throw new ArgumentException($"{nameof(message)}=null");
+
+            #endregion
+
+            // SendMessage
+            this.SendMessage(message, _lineProvider.SendMessage);
+        }
+
+        public void SendMessage(StickerMessage message)
+        {
+            #region Contracts
+
+            if (message == null) throw new ArgumentException($"{nameof(message)}=null");
+
+            #endregion
+
+            // SendMessage
+            this.SendMessage(message, _lineProvider.SendMessage);
+        }
+
+        private void SendMessage<TMessage>(TMessage message, Action<TMessage, ReplyToken?> sendMessage) where TMessage : Message
+        {
+            #region Contracts
+
+            if (message == null) throw new ArgumentException($"{nameof(message)}=null");
+            if (sendMessage == null) throw new ArgumentException($"{nameof(sendMessage)}=null");
 
             #endregion
 
@@ -96,8 +122,8 @@ namespace MDP.Line
                 // Execute
                 try
                 {
-                    // ReplyMessage
-                    _lineProvider.ReplyMessage(message, replyToken);
+                    // SendMessage
+                    sendMessage(message, replyToken);
 
                     // Add
                     _messageRepository.Add(message);
@@ -114,8 +140,8 @@ namespace MDP.Line
 
             // PushMessage
             {
-                // PushMessage
-                _lineProvider.PushMessage(message);
+                // SendMessage
+                sendMessage(message, null);
 
                 // Add
                 _messageRepository.Add(message);
@@ -125,6 +151,7 @@ namespace MDP.Line
                 _publishProvider.OnMessageReceived(message);
             }
         }
+
 
         public User? ReloadUser(string userId)
         {
